@@ -28,14 +28,14 @@ def Rastrigin(POPI,**kwargs):
     return A*col + fx 
 
 
-def inverte(fx):    #Função fitness, para nao ter problemas de divisao por zero
-    hx = min(fx)    #Ocorre um deslocamento para tal
+def inverte(fx):    
+    hx = min(fx)    
     desl = 10**-0.2 - hx
     return 1/( fx + desl)
 
 
 def torneio(fx):
-    ind = np.zeros(len(fx),dtype=int) #cria vetor com o tamanho do fx
+    ind = np.zeros(len(fx),dtype=int) 
     for i in range(len(fx)):
         i1 = random.randint(0,len(fx)-1)
         i2 = random.randint(0, len(fx)-1)
@@ -61,9 +61,25 @@ def cruzamento(X,chancec):
             filho+=1
     return Xfilho
 
+def cruzamento2(X,chancec):  #alpha randomico
+    l = X.shape[0]
+    c = X.shape[1]
+    Xfilho = np.zeros((l,c))
+    filho=0
+    alpha = random.random()
+    while filho <l:
+        i1 = random.randint(0,l-1)
+        i2 = random.randint(0,l-1)
+        if random.random() < chancec:
+            Xfilho[filho,:] = alpha*X[i1,:] + (1-alpha)* X[i2,:]
+            filho+=1
+            Xfilho[filho,:] = alpha*X[i2,:] + (1-alpha)* X[i1,:]
+            filho+=1
+    return Xfilho
+
 def mutacao(X,chance): 
-    [row,col] = X.shape         #recebe o numero de linhas e colunas
-    Xn = np.zeros((row,col))    #cria um vetor com zeros    
+    [row,col] = X.shape        
+    Xn = np.zeros((row,col))       
     for i in range(row):        
         if random.random() <= chance:
 
@@ -98,17 +114,16 @@ for i in range(vezes):
         mel = np.argmin(z)
         mfx = fx[mel]
         melhores[j,:] = a[mel, :]
-
+    
         ele = torneio(fx)
         ind = np.array(a)[ele,:]
         
-        Xc = cruzamento(ind,chancec)
+        Xc = cruzamento2(ind,chancec)
         
         Xn = mutacao(Xc, Ch_Mut)
         
-        z = Rastrigin(Xn, A=10) #refaz os passos para o novo X
+        z = Rastrigin(Xn, A=10)
         fx = inverte(z)
-        n = np.argmin(z)
         
         Pioraux = np.argmin(fx)
         Xn[Pioraux,:] = a[mel,:]
@@ -117,7 +132,7 @@ for i in range(vezes):
         z = Rastrigin(Xn,A=10)
         fx = inverte(z)
         n = np.argmin(z)
-        print("z: ",z[n])
+        print("z: ",j,z[n])
 
         
         if j == TamGer-1:
